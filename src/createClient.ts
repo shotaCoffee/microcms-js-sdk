@@ -13,7 +13,7 @@ const API_VERSION = 'v1';
 /**
  * Initialize SDK Client
  */
-const createClient = ({ serviceDomain, apiKey, globalDraftKey }: ClientParams) => {
+const createClient = ({ serviceDomain, apiKey, apiWriteKey, globalDraftKey }: ClientParams) => {
   if (!serviceDomain || !apiKey) {
     throw new Error('parameter is required (check serviceDomain and apiKey)');
   }
@@ -39,6 +39,10 @@ const createClient = ({ serviceDomain, apiKey, globalDraftKey }: ClientParams) =
 
     if (globalDraftKey && useGlobalDraftKey) {
       Object.assign(baseHeaders.headers, { 'X-GLOBAL-DRAFT-KEY': globalDraftKey });
+    }
+
+    if (apiWriteKey) {
+      Object.assign(baseHeaders.headers, {'X-WRITE-API-KEY': apiWriteKey})
     }
 
     const url = `${baseUrl}/${endpoint}${contentId ? `/${contentId}` : ''}${

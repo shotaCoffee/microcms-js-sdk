@@ -1,6 +1,7 @@
 export interface ClientParams {
   serviceDomain: string;
   apiKey: string;
+  apiWriteKey?: string;
   globalDraftKey?: string;
 }
 
