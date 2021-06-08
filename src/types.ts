@@ -4,11 +4,12 @@ export interface ClientParams {
   globalDraftKey?: string;
 }
 
-export interface MakeRequest {
+export interface MakeRequest<T> {
   endpoint: string;
   contentId?: string;
   queries?: QueriesType;
   useGlobalDraftKey?: boolean;
+  contentData?: T;
 }
 
 export interface GetRequest {
@@ -16,6 +17,11 @@ export interface GetRequest {
   contentId?: string;
   queries?: QueriesType;
   useGlobalDraftKey?: boolean;
+}
+
+export interface PostRequest<T> {
+  endpoint: string
+  contentData: T
 }
 
 type depthNumber = 1 | 2 | 3;
