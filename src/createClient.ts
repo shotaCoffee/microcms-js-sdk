@@ -5,7 +5,7 @@
 import fetch from 'node-fetch';
 import { parseQuery } from './utils/parseQuery';
 import { isString } from './utils/isCheckValue';
-import { ClientParams, MakeRequest, GetRequest } from './types';
+import { ClientParams, MakeRequest, GetRequest, PostRequest } from './types';
 
 const BASE_DOMAIN = 'microcms.io';
 const API_VERSION = 'v1';
@@ -30,7 +30,7 @@ const createClient = ({ serviceDomain, apiKey, globalDraftKey }: ClientParams) =
   /**
    * Make request
    */
-  const makeRequest = async <T>({ endpoint, contentId, queries = {}, useGlobalDraftKey = true }: MakeRequest): Promise<T> => {
+  const makeRequest = async <T>({ endpoint, contentId, queries = {}, useGlobalDraftKey = true, contentData }: MakeRequest<T>): Promise<T> => {
     const queryString = parseQuery(queries);
 
     const baseHeaders = {
@@ -46,7 +46,11 @@ const createClient = ({ serviceDomain, apiKey, globalDraftKey }: ClientParams) =
     }`;
 
     try {
-      const response = await fetch(url, baseHeaders);
+      const response = contentData ? await fetch(url, baseHeaders): await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(contentData),
+        ...baseHeaders
+      });
 
       if (!response.ok) {
         throw new Error(`fetch API response status: ${response.status}`);
@@ -78,8 +82,16 @@ const createClient = ({ serviceDomain, apiKey, globalDraftKey }: ClientParams) =
     return await makeRequest<T>({ endpoint, contentId, queries, useGlobalDraftKey });
   };
 
+  const post = async <T>({endpoint, contentData}: PostRequest<T>): Promise<T> => {
+    if (!endpoint) {
+      return Promise.reject(new Error('endpoint is required'));
+    }
+    return await makeRequest<T>({endpoint: endpoint, contentData: contentData});
+  }
+
   return {
     get,
+    post
   };
 };
 
